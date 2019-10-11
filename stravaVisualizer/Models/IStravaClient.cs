@@ -10,6 +10,6 @@ namespace StravaVisualizer.Models
     public interface IStravaClient
     {
         IEnumerable<VisualActivity> getAllUserActivities(string accessToken, int id);
-        IEnumerable<VisualActivity> getUserActivitiesAfter(string accessToken, int id, DateTime afterDate);
+        IEnumerable<VisualActivity> getUserActivitiesAfter(string accessToken, StravaUser stravaUser, DateTime afterDate);
     }
 }

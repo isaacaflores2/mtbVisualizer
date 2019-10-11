@@ -17,8 +17,8 @@ namespace StravaVisualizerTest
     {
         private IAthletesApi athleteApi;
         private IActivitiesApi activitiesApi;
-        private int totalRides = 50;
-        private int totalRuns = 100;
+        private int totalRides = 5;
+        private int totalRuns = 5;
         private int totalSwims = 1;
         
 
@@ -58,8 +58,7 @@ namespace StravaVisualizerTest
 
             List<VisualActivity> result = (List<VisualActivity>) stravaClient.getAllUserActivities("access_token", 123);
 
-
-            Assert.AreEqual(12, result.Count);
+            Assert.AreEqual(2, result.Count);
             Assert.AreEqual(60, result.ToArray()[0].Summary.MovingTime);
             Assert.AreEqual(ActivityType.Ride, result.ToArray()[1].Summary.Type);
         }
@@ -71,7 +70,7 @@ namespace StravaVisualizerTest
 
             var result = (List<SummaryActivity>) await stravaClient.requestAllUserActivitiesAsync("access_token", 123);
             
-            Assert.AreEqual(12, result.Count);
+            Assert.AreEqual(2, result.Count);
             Assert.AreEqual(60, result.ToArray()[0].MovingTime);
             Assert.AreEqual(ActivityType.Ride, result.ToArray()[1].Type);
         }
@@ -83,7 +82,7 @@ namespace StravaVisualizerTest
 
             var result = (List<SummaryActivity>)await stravaClient.requestActivities(totalRides+totalRuns+totalSwims);
 
-            Assert.AreEqual(12, result.Count);
+            Assert.AreEqual(2, result.Count);
             Assert.AreEqual(60, result.ToArray()[0].MovingTime);
             Assert.AreEqual(ActivityType.Ride, result.ToArray()[1].Type);
         }
@@ -92,12 +91,18 @@ namespace StravaVisualizerTest
         public void Test_RequesUserActivitiesAfter()
         {
             StravaClient stravaClient = new StravaClient(activitiesApi, athleteApi);
-
             DateTime dateTime = DateTime.Now;
+            var user = new StravaUser()
+            {
+                VisualActivities = TestData.VisualActivitiesList(),
+                UserId = 123,
+                LastDownload = dateTime
+            };
 
-            List<VisualActivity> result = (List<VisualActivity>) stravaClient.getUserActivitiesAfter("access_token", 123, dateTime);
+            //List<VisualActivity> result = (List<VisualActivity>) stravaClient.getUserActivitiesAfter("access_token", 123, dateTime);
+            List<VisualActivity> result = (List<VisualActivity>) stravaClient.getUserActivitiesAfter("access_token", user, dateTime);
 
-            Assert.AreEqual(4, result.Count);
+            Assert.AreEqual(9, result.Count);
             Assert.AreEqual(100, result.ToArray()[0].Summary.MovingTime);
             Assert.AreEqual(ActivityType.Run, result.ToArray()[1].Summary.Type);
         }
@@ -106,12 +111,18 @@ namespace StravaVisualizerTest
         public async Task requestActivitiesAfterAsync()
         {
             StravaClient stravaClient = new StravaClient(activitiesApi, athleteApi);
-
             DateTime dateTime = DateTime.Now;
+            var user = new StravaUser()
+            {
+                VisualActivities = TestData.VisualActivitiesList(),
+                UserId = 123,
+                LastDownload = dateTime
+            };
 
-            List<SummaryActivity> result = (List<SummaryActivity>) await stravaClient.requestActivitiesAfterAsync("access_token", 123, dateTime);
 
-            Assert.AreEqual(4, result.Count);
+            List<SummaryActivity> result = (List<SummaryActivity>) await stravaClient.requestActivitiesAfterAsync("access_token", user, dateTime);
+
+            Assert.AreEqual(9,result.Count);
             Assert.AreEqual(100, result.ToArray()[0].MovingTime);
             Assert.AreEqual(ActivityType.Run, result.ToArray()[1].Type);
         }
@@ -126,7 +137,7 @@ namespace StravaVisualizerTest
 
             List<SummaryActivity> result = (List<SummaryActivity>) await stravaClient.requestActivitiesAfter(totalRides + totalRuns + totalSwims, dateTime);
 
-            Assert.AreEqual(12, result.Count);
+            Assert.AreEqual(9, result.Count);
             Assert.AreEqual(100, result.ToArray()[0].MovingTime);
             Assert.AreEqual(ActivityType.Run, result.ToArray()[1].Type);
         }              

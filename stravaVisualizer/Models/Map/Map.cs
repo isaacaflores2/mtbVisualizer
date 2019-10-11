@@ -35,17 +35,18 @@ namespace StravaVisualizer.Models.Map
         {            
             foreach(var visualActivity in VisualActivities)
             {
-                if (visualActivity == null || visualActivity.Summary.StartLatlng == null)
+                if (visualActivity == null || visualActivity.StartLat == null || visualActivity.StartLong == null)
                     continue;          
                 
                 addCoordinate(visualActivity);                
             }
         }
 
-        public void addCoordinate(VisualActivity summary)
-        {          
-            float?[] latlongArray = summary.Summary.StartLatlng.ToArray();
-            Coordinates.Add(new Coordinate(latlongArray[0], latlongArray[1]));
+        public void addCoordinate(VisualActivity visualActivity)
+        {   
+            Coordinates.Add(new Coordinate(
+                visualActivity.StartLat,
+                visualActivity.StartLong));
         }
 
         public ICollection<Coordinate> getCoordinatesByType(IEnumerable<VisualActivity> activities, ActivityType type)
@@ -56,6 +57,10 @@ namespace StravaVisualizer.Models.Map
             var activitiesForType = from activity in activities
                                     where activity.Summary.Type == type
                                     select activity;
+
+            //var activitiesForType = activities
+            //    .Where(a => a.Summary.Type == type)
+            //    .Select(a_type => { return a_type; });
 
             VisualActivities = activitiesForType;
             extractCoordinates();
@@ -74,7 +79,7 @@ namespace StravaVisualizer.Models.Map
 
             foreach (var visualActivity in VisualActivities)
             {
-                if (visualActivity == null || visualActivity.Summary.StartLatlng == null)
+                if (visualActivity == null || visualActivity.StartLat == null || visualActivity.StartLong == null)
                     continue;
 
                 updateNumVisits(visualActivity);

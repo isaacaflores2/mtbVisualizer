@@ -26,9 +26,14 @@ namespace StravaVisualizer.Models.Activities
 
         public StravaUser GetStravaUserById(int id)
         {
-            var userActivityForId = (from user in stravaVisualizerDbContext.StravaUsers
-                                    where user.UserId == id
-                                    select user).FirstOrDefault();
+            //var userActivityForId = (from user in stravaVisualizerDbContext.StravaUsers
+            //                        where user.UserId == id
+            //                        select user).FirstOrDefault();
+
+            var userActivityForId = stravaVisualizerDbContext.StravaUsers
+                .Where(user => user.UserId == id)
+                .Include(user => user.VisualActivities)
+                .FirstOrDefault();
 
             return userActivityForId;
         }
@@ -37,6 +42,11 @@ namespace StravaVisualizer.Models.Activities
         public void SaveChanges()
         {
             stravaVisualizerDbContext.SaveChanges();
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await stravaVisualizerDbContext.SaveChangesAsync();
         }
 
         public void Add<T>(T entity) where T : class

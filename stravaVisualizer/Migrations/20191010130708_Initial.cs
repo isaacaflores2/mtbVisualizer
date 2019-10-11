@@ -1,25 +1,12 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace StravaVisualizer.Migrations
 {
-    public partial class VisualActivity : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "MetaAthlete",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MetaAthlete", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "PolylineMap",
                 columns: table => new
@@ -37,8 +24,7 @@ namespace StravaVisualizer.Migrations
                 name: "StravaUsers",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    UserId = table.Column<int>(nullable: false),
                     LastDownload = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -50,16 +36,15 @@ namespace StravaVisualizer.Migrations
                 name: "VisualActivities",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ActivityId = table.Column<long>(nullable: false),
                     StartLat = table.Column<float>(nullable: true),
                     StartLong = table.Column<float>(nullable: true),
                     EndLat = table.Column<float>(nullable: true),
                     EndLong = table.Column<float>(nullable: true),
                     TrailName = table.Column<string>(nullable: true),
+                    Summary_Id = table.Column<long>(nullable: true),
                     Summary_ExternalId = table.Column<string>(nullable: true),
                     Summary_UploadId = table.Column<long>(nullable: true),
-                    Summary_AthleteId = table.Column<int>(nullable: true),
                     Summary_Name = table.Column<string>(nullable: true),
                     Summary_Distance = table.Column<float>(nullable: true),
                     Summary_MovingTime = table.Column<int>(nullable: true),
@@ -94,17 +79,11 @@ namespace StravaVisualizer.Migrations
                     Summary_DeviceWatts = table.Column<bool>(nullable: true),
                     Summary_MaxWatts = table.Column<int>(nullable: true),
                     Summary_WeightedAverageWatts = table.Column<int>(nullable: true),
-                    StravaUserUserId = table.Column<int>(nullable: true)
+                    UserId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_VisualActivities", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_VisualActivities_MetaAthlete_Summary_AthleteId",
-                        column: x => x.Summary_AthleteId,
-                        principalTable: "MetaAthlete",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                    table.PrimaryKey("PK_VisualActivities", x => x.ActivityId);
                     table.ForeignKey(
                         name: "FK_VisualActivities_PolylineMap_Summary_MapId",
                         column: x => x.Summary_MapId,
@@ -112,17 +91,12 @@ namespace StravaVisualizer.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_VisualActivities_StravaUsers_StravaUserUserId",
-                        column: x => x.StravaUserUserId,
+                        name: "FK_VisualActivities_StravaUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "StravaUsers",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_VisualActivities_Summary_AthleteId",
-                table: "VisualActivities",
-                column: "Summary_AthleteId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_VisualActivities_Summary_MapId",
@@ -130,18 +104,15 @@ namespace StravaVisualizer.Migrations
                 column: "Summary_MapId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_VisualActivities_StravaUserUserId",
+                name: "IX_VisualActivities_UserId",
                 table: "VisualActivities",
-                column: "StravaUserUserId");
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "VisualActivities");
-
-            migrationBuilder.DropTable(
-                name: "MetaAthlete");
 
             migrationBuilder.DropTable(
                 name: "PolylineMap");

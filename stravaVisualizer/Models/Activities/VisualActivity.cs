@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,7 +11,8 @@ namespace StravaVisualizer.Models.Activities
     public class VisualActivity
     {
         [Key]
-        public long? Id { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public long? ActivityId { get; set; }
 
         public float? StartLat { get; set; }
         public float? StartLong { get; set; }
@@ -21,26 +23,31 @@ namespace StravaVisualizer.Models.Activities
         public string TrailName { get; set; }
         
         public SummaryActivity Summary { get; set;}
+    
+        public int? UserId { get; set; }
 
         public VisualActivity(SummaryActivity summaryActivity) : this()
         {
             Summary = summaryActivity;
-            if(Summary.StartLatlng != null)
+            ActivityId = Summary.Id;
+
+            if (Summary.StartLatlng != null)
             {
                 StartLat = Summary.StartLatlng[0];
                 StartLong = Summary.StartLatlng[1];
             }
+            
             if(Summary.EndLatlng != null)
             {
                 EndLat = Summary.EndLatlng[0];
                 EndLong = Summary.EndLatlng[1];
             }
             
-            Id = Summary.Id;
+            UserId = Summary.Athlete.Id;
         }
 
-        private VisualActivity()
-        {               
+        public VisualActivity()
+        {
             TrailName = null;
         }
     }

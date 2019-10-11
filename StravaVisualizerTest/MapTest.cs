@@ -8,12 +8,14 @@ using Microsoft.AspNetCore.Http;
 using StravaVisualizer.Models.Map;
 using StravaVisualizer.Models.Activities;
 using StravaVisualizerTest.Doubles;
+using System.Linq;
+
 namespace StravaVisualizerTest
 {
     [TestClass]
     public class MapTest
     {
-        List<VisualActivity> visualActivities;
+        ICollection<VisualActivity> visualActivities;
 
         [TestInitialize]
         public void Setup()
@@ -63,7 +65,10 @@ namespace StravaVisualizerTest
             Map map = new Map();
             map.VisualActivities = visualActivities;
 
-            map.addCoordinate(visualActivities[0]);
+            var coordinate = (from activity in visualActivities
+                             select activity).FirstOrDefault();
+
+            map.addCoordinate(coordinate);
             var result = (List<Coordinate>)map.Coordinates;
 
             Assert.AreEqual(1, result.Count);                
@@ -93,7 +98,8 @@ namespace StravaVisualizerTest
         public void Test_getUniqueCoordinatesByType()
         {
             Map map = new Map();
-            var summary = new SummaryActivity(type: ActivityType.Ride, startLatlng: new LatLng(), endLatlng: new LatLng(), movingTime: 60);
+            var summary = new SummaryActivity(type: ActivityType.Ride, startLatlng: new LatLng(), 
+                endLatlng: new LatLng(), movingTime: 60, athlete: new MetaAthlete(123));
             summary.StartLatlng.Add(30.0F);
             summary.StartLatlng.Add(40.0F);
             summary.EndLatlng.Add(30.0F);
@@ -116,7 +122,8 @@ namespace StravaVisualizerTest
         public void Test_updateNumVisits()
         {
             Map map = new Map();
-            var summary = new SummaryActivity(type: ActivityType.Ride, startLatlng: new LatLng(), endLatlng: new LatLng(), movingTime: 60);
+            var summary = new SummaryActivity(type: ActivityType.Ride, startLatlng: new LatLng(), 
+                endLatlng: new LatLng(), movingTime: 60, athlete: new MetaAthlete(123));
             summary.StartLatlng.Add(30.0F);
             summary.StartLatlng.Add(40.0F);
             summary.EndLatlng.Add(30.0F);

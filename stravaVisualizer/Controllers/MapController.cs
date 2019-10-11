@@ -40,33 +40,32 @@ namespace stravaVisualizer.Controllers
             return View("MapAsync");
         }
     
-        public  PartialViewResult LoadMap()
+        public PartialViewResult LoadMap()
         {
             _httpContextHelper.Context = HttpContext;
             string accessToken = _httpContextHelper.getAccessToken();
             int stravaId = Convert.ToInt32(User.FindFirst("stravaId").Value);
-            var stravaUser = _stravaVisualizerRepository.GetStravaUserById(stravaId);
-            ICollection<Coordinate> coordinates;
             
-            if (stravaUser == null || stravaUser.VisualActivities == null || stravaUser.VisualActivities.Count == 0)
+            var user = _stravaVisualizerRepository.GetStravaUserById(stravaId);
+            
+            if (user == null || user.VisualActivities == null || user.VisualActivities.Count == 0)
             {
                 var activities = _stravaClient.getAllUserActivities(accessToken, stravaId);
-                stravaUser = new StravaUser()
+                user = new StravaUser()
                 {
                     VisualActivities = activities.ToList(),
                     UserId = stravaId,
                     LastDownload = DateTime.Now.Date
                 };
-                _stravaVisualizerRepository.Add(stravaUser);
-                foreach (var visualActivity in stravaUser.VisualActivities)
-                    _stravaVisualizerRepository.Add(visualActivity);
-
+                _stravaVisualizerRepository.Add(user);
                 _stravaVisualizerRepository.SaveChanges();
             }
-            //var coordinates = _map.getCoordinatesByType(_stravaClient.getAllUserActivities(accessToken, stravaId), ActivityType.Ride);
-            
-            coordinates = _map.getCoordinatesByType(stravaUser.VisualActivities, ActivityType.Ride);
-            
+            else
+            {
+                var lastestActivities = _stravaClient.getUserActivitiesAfter(accessToken, user, user.LastDownload);
+            }
+
+            var coordinates = _map.getCoordinatesByType(user.VisualActivities, ActivityType.Ride);            
             return PartialView("_BingMapPartial", coordinates);
         }
    

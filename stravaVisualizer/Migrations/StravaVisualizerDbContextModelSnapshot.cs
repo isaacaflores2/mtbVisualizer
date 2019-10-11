@@ -35,24 +35,18 @@ namespace StravaVisualizer.Migrations
 
             modelBuilder.Entity("StravaVisualizer.Models.Activities.StravaUser", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<int>("UserId");
 
                     b.Property<DateTime>("LastDownload");
 
-                    b.Property<int>("StravaId");
-
-                    b.HasKey("Id");
+                    b.HasKey("UserId");
 
                     b.ToTable("StravaUsers");
                 });
 
             modelBuilder.Entity("StravaVisualizer.Models.Activities.VisualActivity", b =>
                 {
-                    b.Property<long?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<long?>("ActivityId");
 
                     b.Property<float?>("EndLat");
 
@@ -62,13 +56,13 @@ namespace StravaVisualizer.Migrations
 
                     b.Property<float?>("StartLong");
 
-                    b.Property<int?>("StravaUserId");
-
                     b.Property<string>("TrailName");
 
-                    b.HasKey("Id");
+                    b.Property<int?>("UserId");
 
-                    b.HasIndex("StravaUserId");
+                    b.HasKey("ActivityId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("VisualActivities");
                 });
@@ -77,13 +71,11 @@ namespace StravaVisualizer.Migrations
                 {
                     b.HasOne("StravaVisualizer.Models.Activities.StravaUser")
                         .WithMany("VisualActivities")
-                        .HasForeignKey("StravaUserId");
+                        .HasForeignKey("UserId");
 
                     b.OwnsOne("IO.Swagger.Model.SummaryActivity", "Summary", b1 =>
                         {
-                            b1.Property<long?>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                            b1.Property<long?>("VisualActivityActivityId");
 
                             b1.Property<int?>("AchievementCount");
 
@@ -114,6 +106,8 @@ namespace StravaVisualizer.Migrations
                             b1.Property<string>("GearId");
 
                             b1.Property<bool?>("HasKudoed");
+
+                            b1.Property<long?>("Id");
 
                             b1.Property<float?>("Kilojoules");
 
@@ -157,20 +151,20 @@ namespace StravaVisualizer.Migrations
 
                             b1.Property<int?>("WorkoutType");
 
-                            b1.HasKey("Id");
+                            b1.HasKey("VisualActivityActivityId");
 
                             b1.HasIndex("MapId");
 
                             b1.ToTable("VisualActivities");
 
-                            b1.HasOne("StravaVisualizer.Models.Activities.VisualActivity")
-                                .WithOne("Summary")
-                                .HasForeignKey("IO.Swagger.Model.SummaryActivity", "Id")
-                                .OnDelete(DeleteBehavior.Cascade);
-
                             b1.HasOne("IO.Swagger.Model.PolylineMap", "Map")
                                 .WithMany()
                                 .HasForeignKey("MapId");
+
+                            b1.HasOne("StravaVisualizer.Models.Activities.VisualActivity")
+                                .WithOne("Summary")
+                                .HasForeignKey("IO.Swagger.Model.SummaryActivity", "VisualActivityActivityId")
+                                .OnDelete(DeleteBehavior.Cascade);
                         });
                 });
 #pragma warning restore 612, 618

@@ -12,6 +12,7 @@ namespace StravaVisualizer.Models.Activities
         StravaUser GetStravaUserById(int id);
         void Add<T>(T entity) where T : class;
         void SaveChanges();
+        Task SaveChangesAsync();
 
     }
 }

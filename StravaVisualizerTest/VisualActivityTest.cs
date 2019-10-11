@@ -13,7 +13,8 @@ namespace StravaVisualizerTest
         [TestMethod]        
         public void Test_ConvertSummaryToActivity()
         {
-            SummaryActivity summaryActivity = new SummaryActivity(type: ActivityType.Crossfit, startLatlng: new LatLng(), endLatlng: new LatLng(), movingTime: 60);
+            SummaryActivity summaryActivity = new SummaryActivity(type: ActivityType.Crossfit, 
+                startLatlng: new LatLng(), endLatlng: new LatLng(), movingTime: 60, athlete: new MetaAthlete(123));
             summaryActivity.StartLatlng.Add(30.0F);
             summaryActivity.StartLatlng.Add(40.0F);
             summaryActivity.EndLatlng.Add(30.0F);

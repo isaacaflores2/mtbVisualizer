@@ -43,17 +43,23 @@ namespace StravaVisualizer.Models
 
             try
             {
-                ActivityStats athleteStats = await _athletesApi.GetStatsAsync(id);                
-                int totalRides = athleteStats.AllRideTotals.Count.Value;
-                totalRides += athleteStats.AllRunTotals.Count.Value;
-                totalRides += athleteStats.AllSwimTotals.Count.Value;
-                return  await requestActivities(totalRides);                             
+                var athleteStats = await _athletesApi.GetStatsAsync(id);
+                int totalActivites = calcTotalActivityCount(athleteStats);
+                return  await requestActivities(totalActivites);                             
             }
             catch (Exception e)
             {
                 Debug.Print("Exception when calling ActivitiesApi.getLoggedInAthleteActivities: " + e.Message);
             }
             return null;
+        }
+
+        private int calcTotalActivityCount(ActivityStats athleteStats)
+        {            
+            int total = athleteStats.AllRideTotals.Count.Value;
+            total += athleteStats.AllRunTotals.Count.Value;
+            total += athleteStats.AllSwimTotals.Count.Value;
+            return total;
         }
 
         public async Task<IEnumerable<SummaryActivity>> requestActivities( int total)
@@ -69,9 +75,10 @@ namespace StravaVisualizer.Models
             return activities;
         }
        
-        public IEnumerable<VisualActivity> getUserActivitiesAfter(string accessToken, int id, DateTime afterDate)
+        public IEnumerable<VisualActivity> getUserActivitiesAfter(string accessToken, StravaUser stravaUser, DateTime afterDate)
         {
-            var summaryActivities =  requestActivitiesAfterAsync(accessToken, id, afterDate).Result;
+            var summaryActivities =  requestActivitiesAfterAsync(accessToken, stravaUser, afterDate).Result;
+
             List<VisualActivity> visualActivites = new List<VisualActivity>();
             foreach (var summary in summaryActivities)
             {
@@ -80,14 +87,16 @@ namespace StravaVisualizer.Models
             return visualActivites.AsEnumerable();
         }
     
-        public async Task<IEnumerable<SummaryActivity>> requestActivitiesAfterAsync(string accessToken, int id, DateTime afterDate)
+        public async Task<IEnumerable<SummaryActivity>> requestActivitiesAfterAsync(string accessToken, StravaUser stravaUser, DateTime afterDate)
         {
-            Configuration.Default.AccessToken = accessToken;                       
-            int requirePages = 60;
+            Configuration.Default.AccessToken = accessToken;
+            var athleteStats = await _athletesApi.GetStatsAsync(stravaUser.UserId);
+            int totalActivites = calcTotalActivityCount(athleteStats);
+            int requiredActivities = getActivityDifferenceSinceLastDownload(stravaUser, totalActivites);
 
             try
             {
-                return await requestActivitiesAfter(requirePages, afterDate);
+                return await requestActivitiesAfter(requiredActivities, afterDate);
             }
             catch (Exception e)
             {
@@ -96,14 +105,19 @@ namespace StravaVisualizer.Models
             return null;
         }
 
-        public async Task<IEnumerable<SummaryActivity>> requestActivitiesAfter(int total, DateTime afterDate)
+        private int getActivityDifferenceSinceLastDownload(StravaUser stravaUser, int totalActivities)
+        {
+            int activitesDownloaded = stravaUser.VisualActivities.Count();
+            return totalActivities - activitesDownloaded;
+        }
+
+        public async Task<IEnumerable<SummaryActivity>> requestActivitiesAfter(int requiredActivities, DateTime afterDate)
         {
             List<SummaryActivity> activities = new List<SummaryActivity>();
             DateTimeOffset dto = new DateTimeOffset(afterDate);
             var afterDateEpoch = (int)dto.ToUnixTimeSeconds();
-            int requiredPages = (int)Math.Ceiling(total / 30.0);
-
-            for (int i = 1; i <= requiredPages; i++)
+            
+            for (int i = 0; i <= requiredActivities; i= activities.Count())
             {
                 var activitesPage = await _activitiesApi.GetLoggedInAthleteActivitiesAsync(page: i, after: afterDateEpoch);
                 activities.AddRange(activitesPage);

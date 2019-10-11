@@ -11,7 +11,7 @@ namespace StravaVisualizerTest
     [TestClass]
     public class UserActivitiesTest
     {
-        List<VisualActivity> visualActivities;
+        ICollection<VisualActivity> visualActivities;
 
         [TestInitialize]
         public void Setup()
@@ -28,7 +28,7 @@ namespace StravaVisualizerTest
             activities.LastDownload = DateTime.Now.Date;
             activities.UserId = 123;
 
-            CollectionAssert.AreEqual(visualActivities, activities.VisualActivities);
+            CollectionAssert.AreEqual((List<VisualActivity>) visualActivities, (List<VisualActivity>) activities.VisualActivities);
             Assert.AreEqual(DateTime.Now.Date, activities.LastDownload);
             Assert.AreEqual(123, activities.UserId);
         }
