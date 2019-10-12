@@ -28,7 +28,7 @@ namespace StravaVisualizerTest
         public void Setup()
         {
             httpContextHelper = Substitute.For<IHttpContextHelper>();
-            httpContextHelper.getAccessToken().Returns("1");
+            httpContextHelper.getAccessToken().Returns("access_token");
 
             stravaClient = Substitute.For<IStravaClient>();
 
@@ -38,22 +38,24 @@ namespace StravaVisualizerTest
 
             IEnumerable<VisualActivity> activities = TestData.VisualActivitiesList(); 
 
-            IEnumerable<VisualActivity> newUserActivities = TestData.VisualActivitiesList();
+            IEnumerable<VisualActivity> newUserActivities = TestData.NewVisualActivitiesList();
 
 
 
             stravaClient.getAllUserActivities("access_token", 123).Returns(activities);
             stravaClient.getAllUserActivities("access_token", 2222).Returns(newUserActivities);
+            stravaClient.getUserActivitiesAfter("access_token", Arg.Any<StravaUser>(), Arg.Any<DateTime>()).Returns(newUserActivities);
 
-            map = Substitute.For<IMap>();
-            var rideCoordinate = new Coordinate(30.0F, 40.0F);
-            ICollection<Coordinate> coordinates = new List<Coordinate>()
-            {
-                new Coordinate(),
-                rideCoordinate,
-            };
-            
-            map.getCoordinatesByType(Arg.Any<IEnumerable<VisualActivity>>(), ActivityType.Ride).Returns(coordinates);
+            //map = Substitute.For<IMap>();
+            //var rideCoordinate = new Coordinate(30.0F, 40.0F);
+            //ICollection<Coordinate> coordinates = new List<Coordinate>()
+            //{
+            //    new Coordinate(),
+            //    rideCoordinate,
+            //};
+
+            //map.getCoordinatesByType(Arg.Any<IEnumerable<VisualActivity>>(), ActivityType.Ride).Returns(coordinates);
+            map = new Map();
 
             var userActivity = new StravaUser { VisualActivities = (List<VisualActivity>) activities, UserId = 2, LastDownload = DateTime.Now };
             userActivities = new List<StravaUser>
@@ -67,6 +69,7 @@ namespace StravaVisualizerTest
             userActivityRepository.GetUserActivities().Returns(userActivities);            
             userActivityRepository.GetStravaUserById(123).Returns(userActivity);
             userActivityRepository.GetStravaUserById(2222).Returns(new StravaUser());
+            
         }
 
         [TestMethod]
@@ -98,7 +101,7 @@ namespace StravaVisualizerTest
         }
 
         [TestMethod]
-        public void Test_LoadMap_Context_Data()
+        public void Test_LoadMap_Context_Data_For_Returning_User()
         {
             MapController controller = new MapController(httpContextHelper, stravaClient, map, userActivityRepository);
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
@@ -112,6 +115,7 @@ namespace StravaVisualizerTest
 
             var result = controller.LoadMap() as PartialViewResult;
 
+            Assert.AreEqual(3, ((List<Coordinate>)result.Model).Count());
             Assert.AreEqual(typeof(List<Coordinate>), result.Model.GetType());
             Assert.AreEqual( 30.0F , ((IList<Coordinate>)result.Model)[1].Latitude);
         }
@@ -131,8 +135,9 @@ namespace StravaVisualizerTest
 
             var result = controller.LoadMap() as PartialViewResult;
 
+            Assert.AreEqual(2, ((List<Coordinate>)result.Model).Count());
             Assert.AreEqual(typeof(List<Coordinate>), result.Model.GetType());
-            Assert.AreEqual(30.0F, ((IList<Coordinate>)result.Model)[1].Latitude);
-        }
+            Assert.AreEqual(30.6F, ((IList<Coordinate>)result.Model)[1].Latitude);
+        }   
     }
 }

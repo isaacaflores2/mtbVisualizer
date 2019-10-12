@@ -46,24 +46,34 @@ namespace stravaVisualizer.Controllers
             string accessToken = _httpContextHelper.getAccessToken();
             int stravaId = Convert.ToInt32(User.FindFirst("stravaId").Value);
             
-            var user = _stravaVisualizerRepository.GetStravaUserById(stravaId);
-            
-            if (user == null || user.VisualActivities == null || user.VisualActivities.Count == 0)
-            {
+            //var user = _stravaVisualizerRepository.GetStravaUserById(stravaId);
+
+            //if (user == null || user.VisualActivities == null || user.VisualActivities.Count == 0)
+            //{
                 var activities = _stravaClient.getAllUserActivities(accessToken, stravaId);
-                user = new StravaUser()
+                var user = new StravaUser()
                 {
                     VisualActivities = activities.ToList(),
                     UserId = stravaId,
                     LastDownload = DateTime.Now.Date
                 };
-                _stravaVisualizerRepository.Add(user);
-                _stravaVisualizerRepository.SaveChanges();
-            }
-            else
-            {
-                var lastestActivities = _stravaClient.getUserActivitiesAfter(accessToken, user, user.LastDownload);
-            }
+                //_stravaVisualizerRepository.Add(user);
+                //_stravaVisualizerRepository.SaveChanges();
+            //}
+            //else
+            //{
+            //    var lastestActivities = _stravaClient.getUserActivitiesAfter(accessToken, user, user.LastDownload);
+            //    //var currentSavedActivities = user.VisualActivities;
+            //    //var unqiueLatestActivites = from latestActivity in lastestActivities
+            //    //                            join currActivity in currentSavedActivities
+            //    //                            on lastestActivities !=
+            //    //                            select latestActivity;
+
+            //    if (lastestActivities != null)
+            //    {
+            //        ((List<VisualActivity>)user.VisualActivities).AddRange(lastestActivities);
+            //    }
+            //}
 
             var coordinates = _map.getCoordinatesByType(user.VisualActivities, ActivityType.Ride);            
             return PartialView("_BingMapPartial", coordinates);
