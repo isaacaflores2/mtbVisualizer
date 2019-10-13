@@ -43,7 +43,7 @@ namespace StravaVisualizer.Models
 
             try
             {
-                var athleteStats = await _athletesApi.GetStatsAsync(id);
+                var athleteStats = await _athletesApi.GetStatsAsync(id);                
                 int totalActivites = calcTotalActivityCount(athleteStats);
                 return  await requestActivities(totalActivites);                             
             }
@@ -67,18 +67,11 @@ namespace StravaVisualizer.Models
         {
             List<SummaryActivity> activities = new List<SummaryActivity>();
 
-            //int requiredPages = (int) Math.Ceiling(total /30.0);
-            //for(int i = 1; i <= requiredPages; i++)
-            //{
-            //    var activitesPage =  await _activitiesApi.GetLoggedInAthleteActivitiesAsync(page: i);                
-            //    activities.AddRange(activitesPage);
-            //}
-
-            int i = 0;
+            int i = 1;
             while (true)
             {
                 var activitesPage = await _activitiesApi.GetLoggedInAthleteActivitiesAsync(page: i);
-                if(activitesPage == null )
+                if(activitesPage.Count == 0 )
                 {
                     break;
                 }

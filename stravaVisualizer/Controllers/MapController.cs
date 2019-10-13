@@ -45,37 +45,38 @@ namespace stravaVisualizer.Controllers
             _httpContextHelper.Context = HttpContext;
             string accessToken = _httpContextHelper.getAccessToken();
             int stravaId = Convert.ToInt32(User.FindFirst("stravaId").Value);
-            
-            //var user = _stravaVisualizerRepository.GetStravaUserById(stravaId);
 
-            //if (user == null || user.VisualActivities == null || user.VisualActivities.Count == 0)
-            //{
+            var user = _stravaVisualizerRepository.GetStravaUserById(stravaId);
+
+            if (user == null || user.VisualActivities == null || user.VisualActivities.Count == 0)
+            {
                 var activities = _stravaClient.getAllUserActivities(accessToken, stravaId);
-                var user = new StravaUser()
+                user = new StravaUser()
                 {
                     VisualActivities = activities.ToList(),
                     UserId = stravaId,
                     LastDownload = DateTime.Now.Date
                 };
-                //_stravaVisualizerRepository.Add(user);
-                //_stravaVisualizerRepository.SaveChanges();
-            //}
-            //else
-            //{
-            //    var lastestActivities = _stravaClient.getUserActivitiesAfter(accessToken, user, user.LastDownload);
-            //    //var currentSavedActivities = user.VisualActivities;
-            //    //var unqiueLatestActivites = from latestActivity in lastestActivities
-            //    //                            join currActivity in currentSavedActivities
-            //    //                            on lastestActivities !=
-            //    //                            select latestActivity;
+                _stravaVisualizerRepository.Add(user);
+                _stravaVisualizerRepository.SaveChanges();
+            }
+            else
+            {
+                var lastestActivities = _stravaClient.getUserActivitiesAfter(accessToken, user, user.LastDownload);
+                //var currentSavedActivities = user.VisualActivities;
+                //var unqiueLatestActivites = from latestActivity in lastestActivities
+                //                            join currActivity in currentSavedActivities
+                //                            on lastestActivities !=
+                //                            select latestActivity;
 
-            //    if (lastestActivities != null)
-            //    {
-            //        ((List<VisualActivity>)user.VisualActivities).AddRange(lastestActivities);
-            //    }
-            //}
+                if (lastestActivities != null)
+                {
+                    ((List<VisualActivity>)user.VisualActivities).AddRange(lastestActivities);
+                }
+            }
 
-            var coordinates = _map.getCoordinatesByType(user.VisualActivities, ActivityType.Ride);            
+            //var coordinates = _map.getCoordinatesByType(user.VisualActivities, ActivityType.Ride);            
+            var coordinates = _map.getCoordinates(user.VisualActivities);         
             return PartialView("_BingMapPartial", coordinates);
         }
    
