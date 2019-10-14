@@ -66,7 +66,6 @@ namespace StravaVisualizer.Models
         public async Task<IEnumerable<SummaryActivity>> requestActivities( int total)
         {
             List<SummaryActivity> activities = new List<SummaryActivity>();
-
             int i = 1;
             while (true)
             {
@@ -79,8 +78,6 @@ namespace StravaVisualizer.Models
                 activities.AddRange(activitesPage);
                 i++;
             }
-
-
             return activities;
         }
        
@@ -138,14 +135,22 @@ namespace StravaVisualizer.Models
             DateTimeOffset dto = new DateTimeOffset(afterDate);
             var afterDateEpoch = (int)dto.ToUnixTimeSeconds();
             int requiredPages = (int)Math.Ceiling(requiredActivities / 30.0);
-
-            for (int i = 0; i <= requiredPages; i= activities.Count())
+  
+            int i = 1;
+            while (true)
             {
                 var activitesPage = await _activitiesApi.GetLoggedInAthleteActivitiesAsync(page: i, after: afterDateEpoch);
+                if (activitesPage.Count == 0)
+                {
+                    break;
+                }
+
                 activities.AddRange(activitesPage);
+                i++;
             }
             return activities;
+
         }
-              
+
     }
 }

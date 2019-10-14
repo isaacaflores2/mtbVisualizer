@@ -53,5 +53,10 @@ namespace StravaVisualizer.Models.Activities
         {
             stravaVisualizerDbContext.Add<T>(entity);
         }
+
+        public bool Contains(VisualActivity activity)
+        {
+            return stravaVisualizerDbContext.VisualActivities.Contains(activity);
+        }
     }
 }

@@ -35,13 +35,18 @@ namespace StravaVisualizerTest
             athleteApi.GetStatsAsync(Arg.Any<int>()).Returns(stats);
 
             activitiesApi = Substitute.For<IActivitiesApi>();
+            
             List<SummaryActivity> activities = new List<SummaryActivity>
             {
                 TestData.SummaryActivity1(),
                 TestData.SummaryActivity2()
                 
-            };          
-            activitiesApi.GetLoggedInAthleteActivitiesAsync(page:Arg.Any<int>()).Returns(Task.FromResult(activities));
+            };
+
+            List<SummaryActivity> emptyActivities = new List<SummaryActivity>();           
+
+            activitiesApi.GetLoggedInAthleteActivitiesAsync(page: 1).Returns(Task.FromResult(activities));
+            activitiesApi.GetLoggedInAthleteActivitiesAsync(page: 2).Returns(Task.FromResult(emptyActivities));
 
             List<SummaryActivity> activitiesAfter = new List<SummaryActivity>
             {
@@ -55,7 +60,8 @@ namespace StravaVisualizerTest
                 TestData.SummaryActivity3(),
                 TestData.SummaryActivity3()
             };
-            activitiesApi.GetLoggedInAthleteActivitiesAsync(page:Arg.Any<int>(), after: Arg.Any<int>()).Returns(Task.FromResult(activitiesAfter));
+            activitiesApi.GetLoggedInAthleteActivitiesAsync(page: 1, after: Arg.Any<int>()).Returns(Task.FromResult(activitiesAfter));
+            activitiesApi.GetLoggedInAthleteActivitiesAsync(page: 2, after: Arg.Any<int>()).Returns(Task.FromResult(emptyActivities));
         }
 
         [TestMethod]

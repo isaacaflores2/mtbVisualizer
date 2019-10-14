@@ -76,16 +76,17 @@ namespace stravaVisualizer.Areas.Identity.Pages.Account
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 
+            var props = new AuthenticationProperties();
+            props.StoreTokens(info.AuthenticationTokens);
+            props.IsPersistent = true;
+
             // Sign in the user with this external login provider if the user already has a login.
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor : true);
             if (result.Succeeded)
             {
                 var user = await _userManager.FindByLoginAsync(info.LoginProvider,
                 info.ProviderKey);
-
-                var props = new AuthenticationProperties();
-                props.StoreTokens(info.AuthenticationTokens);
-
+              
                 await _signInManager.SignInAsync(user, props, info.LoginProvider);
 
                 _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
@@ -105,8 +106,9 @@ namespace stravaVisualizer.Areas.Identity.Pages.Account
                     Input = new InputModel
                     {
                         Email = info.Principal.FindFirstValue(ClaimTypes.Email)
-                    };
+                    };                   
                 }
+                
                 return Page();
             }
         }
@@ -165,7 +167,8 @@ namespace stravaVisualizer.Areas.Identity.Pages.Account
                         props.StoreTokens(info.AuthenticationTokens);
                         props.IsPersistent = true;
 
-                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        //await _signInManager.SignInAsync(user, isPersistent: false);
+                        await _signInManager.SignInAsync(user, props, info.LoginProvider);
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
                         return LocalRedirect(returnUrl);
                     }

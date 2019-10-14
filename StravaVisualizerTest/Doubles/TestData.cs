@@ -22,7 +22,7 @@ namespace StravaVisualizerTest.Doubles
 
             ICollection<VisualActivity> activities = new List<VisualActivity>
             {
-                new VisualActivity(summary1),                
+                new VisualActivity(summary1),                   
             };
 
             return activities;
