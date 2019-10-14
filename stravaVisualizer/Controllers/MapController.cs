@@ -62,17 +62,20 @@ namespace stravaVisualizer.Controllers
             else
             {
                 var lastDownloadDate = new DateTime(2019, 9, 29);
-                var lastestActivities = _stravaClient.getUserActivitiesAfter(accessToken, user, user.LastDownload);
-                                
-                foreach (var activity in lastestActivities)
+                var latestActivities = _stravaClient.getUserActivitiesAfter(accessToken, user, user.LastDownload);
+
+                if (latestActivities != null)
                 {
-                    if (!context.Contains(activity))
+                    foreach (var activity in latestActivities)
                     {
-                        context.Add(activity);
-                        user.VisualActivities.Add(activity);
+                        if (!context.Contains(activity))
+                        {
+                            context.Add(activity);
+                            user.VisualActivities.Add(activity);
+                        }
                     }
+                    context.SaveChanges();
                 }
-                context.SaveChanges();
             }
             
             var coordinates = _map.getCoordinates(user.VisualActivities);         
@@ -110,17 +113,20 @@ namespace stravaVisualizer.Controllers
             else
             {
                 var lastDownloadDate = new DateTime(2019, 9, 29);
-                var lastestActivities = _stravaClient.getUserActivitiesAfter(accessToken, user, user.LastDownload);
+                var latestActivities = _stravaClient.getUserActivitiesAfter(accessToken, user, user.LastDownload);
 
-                foreach (var activity in lastestActivities)
+                if (latestActivities != null)
                 {
-                    if (!context.Contains(activity))
+                    foreach (var activity in latestActivities)
                     {
-                        context.Add(activity);
-                        user.VisualActivities.Add(activity);
+                        if (!context.Contains(activity))
+                        {
+                            context.Add(activity);
+                            user.VisualActivities.Add(activity);
+                        }
                     }
+                    context.SaveChanges();
                 }
-                context.SaveChanges();
             }
             return user; 
         }

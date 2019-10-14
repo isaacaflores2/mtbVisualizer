@@ -108,12 +108,13 @@ namespace StravaVisualizer.Models
         public async Task<IEnumerable<SummaryActivity>> requestActivitiesAfterAsync(string accessToken, StravaUser stravaUser, DateTime afterDate)
         {
             Configuration.Default.AccessToken = accessToken;
-            var athleteStats = await _athletesApi.GetStatsAsync(stravaUser.UserId);
-            int totalActivites = calcTotalActivityCount(athleteStats);
-            int requiredActivities = getActivityDifferenceSinceLastDownload(stravaUser, totalActivites);
+            
 
             try
             {
+                var athleteStats = await _athletesApi.GetStatsAsync(stravaUser.UserId);
+                int totalActivites = calcTotalActivityCount(athleteStats);
+                int requiredActivities = getActivityDifferenceSinceLastDownload(stravaUser, totalActivites);
                 return await requestActivitiesAfter(requiredActivities, afterDate);
             }
             catch (Exception e)

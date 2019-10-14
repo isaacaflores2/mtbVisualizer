@@ -1,5 +1,6 @@
 ﻿
 @using StravaVisualizer.Models
+@using IO.Swagger.Model
 @model ICollection<Pin>
 
 <h2>Your rides</h2>
@@ -17,14 +18,14 @@
     <script>
         $(document).ready(function () {
             $("#map_show_rides").click(function () {
-                $("#mapDiv").load('@Url.Action("LoadMap")')    
+                $("#mapDiv").load('@Url.Action("LoadMapByType")', new {type = @ActivityType.Ride })    
             })
         })
     </script>    
     <script>
         $(document).ready(function () {
             $("#map_show_runs").click(function () {
-                $("#mapDiv").load('@Url.Action("LoadMap")')
+                $("#mapDiv").load('@Url.Action("LoadMapByType")' new {type = @ActivityType.Run })
             })
         })
     </script>
