@@ -138,6 +138,12 @@ namespace StravaVisualizerTest
             Assert.AreEqual(2, ((List<Coordinate>)result.Model).Count());
             Assert.AreEqual(typeof(List<Coordinate>), result.Model.GetType());
             Assert.AreEqual(30.6F, ((IList<Coordinate>)result.Model)[1].Latitude);
-        }   
+        }
+        
+        [TestMethod]
+        public void Test_LoadMapByType()
+        {
+            Assert.Fail();
+        }
     }
 }

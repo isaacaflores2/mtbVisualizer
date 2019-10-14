@@ -21,7 +21,20 @@
             })
         })
     </script>    
-    
+    <script>
+        $(document).ready(function () {
+            $("#map_show_runs").click(function () {
+                $("#mapDiv").load('@Url.Action("LoadMap")')
+            })
+        })
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#map_show_all").click(function () {
+                $("#mapDiv").load('@Url.Action("LoadMap")')
+            })
+        })
+    </script>
     <script>
         $.ajax({
             url: '@Url.Action("LoadMap")',
