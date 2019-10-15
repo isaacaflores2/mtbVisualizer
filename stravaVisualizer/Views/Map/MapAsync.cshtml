@@ -18,14 +18,14 @@
     <script>
         $(document).ready(function () {
             $("#map_show_rides").click(function () {
-                $("#mapDiv").load('@Url.Action("LoadMapByType")', new {type = @ActivityType.Ride })    
+                $("#mapDiv").load('@Url.Action("LoadMapByType")', {type : "Ride" })    
             })
         })
     </script>    
     <script>
         $(document).ready(function () {
             $("#map_show_runs").click(function () {
-                $("#mapDiv").load('@Url.Action("LoadMapByType")' new {type = @ActivityType.Run })
+                $("#mapDiv").load('@Url.Action("LoadMapByType")', {type : "Run" })
             })
         })
     </script>

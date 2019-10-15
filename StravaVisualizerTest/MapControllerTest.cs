@@ -135,7 +135,7 @@ namespace StravaVisualizerTest
                 HttpContext = new DefaultHttpContext() { User = user }
             };
 
-            var result = controller.LoadMapByType(ActivityType.Ride) as PartialViewResult;
+            var result = controller.LoadMapByType("Ride") as PartialViewResult;
             var activities = result.Model as List<Coordinate>;
             Assert.AreEqual(3, ((List<Coordinate>)result.Model).Count());            
             Assert.AreEqual(30.6F,  activities[0].Latitude);

@@ -82,14 +82,14 @@ namespace stravaVisualizer.Controllers
             return PartialView("_BingMapPartial", coordinates);
         }
 
-        public PartialViewResult LoadMapByType(ActivityType type)
+        public PartialViewResult LoadMapByType(String type)
         {
             _httpContextHelper.Context = HttpContext;
             string accessToken = _httpContextHelper.getAccessToken();
             int stravaId = Convert.ToInt32(User.FindFirst("stravaId").Value);
             var user = getUpdatedUserActivities(accessToken, stravaId);
-            
-            var coordinates = _map.getCoordinatesByType(user.VisualActivities, type);
+            Enum.TryParse(type, out ActivityType activityType);
+            var coordinates = _map.getCoordinatesByType(user.VisualActivities, activityType);
 
             return PartialView("_BingMapPartial", coordinates);
         }
