@@ -11,6 +11,7 @@ namespace StravaVisualizer.Models.Activities
         IQueryable<StravaUser> GetUserActivities();
         StravaUser GetStravaUserById(int id);
         void Add<T>(T entity) where T : class;
+        bool Contains(VisualActivity activity);
         void SaveChanges();
         Task SaveChangesAsync();
 

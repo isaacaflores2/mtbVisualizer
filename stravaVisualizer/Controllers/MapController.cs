@@ -23,7 +23,7 @@ namespace stravaVisualizer.Controllers
         private readonly IHttpContextHelper _httpContextHelper;
         private readonly IStravaClient _stravaClient;
         private readonly IMap _map;
-        private readonly IStravaVisualizerRepository _stravaVisualizerRepository;
+        private readonly IStravaVisualizerRepository context;
          
         public IDictionary<string, string> AuthProperties { get; set; }
 
@@ -32,7 +32,7 @@ namespace stravaVisualizer.Controllers
             this._httpContextHelper = httpContextHelper;
             this._stravaClient = stravaClient;
             this._map = map;
-            this._stravaVisualizerRepository = userActivityRepository;
+            this.context = userActivityRepository;
         }
 
         public IActionResult Index()
@@ -45,9 +45,8 @@ namespace stravaVisualizer.Controllers
             _httpContextHelper.Context = HttpContext;
             string accessToken = _httpContextHelper.getAccessToken();
             int stravaId = Convert.ToInt32(User.FindFirst("stravaId").Value);
-            
-            var user = _stravaVisualizerRepository.GetStravaUserById(stravaId);
-            
+            var user = context.GetStravaUserById(stravaId);
+
             if (user == null || user.VisualActivities == null || user.VisualActivities.Count == 0)
             {
                 var activities = _stravaClient.getAllUserActivities(accessToken, stravaId);
@@ -57,18 +56,81 @@ namespace stravaVisualizer.Controllers
                     UserId = stravaId,
                     LastDownload = DateTime.Now.Date
                 };
-                _stravaVisualizerRepository.Add(user);
-                _stravaVisualizerRepository.SaveChanges();
+                context.Add(user);
+                context.SaveChanges();
             }
             else
             {
-                var lastestActivities = _stravaClient.getUserActivitiesAfter(accessToken, user, user.LastDownload);
-            }
+                var lastDownloadDate = new DateTime(2019, 9, 29);
+                var latestActivities = _stravaClient.getUserActivitiesAfter(accessToken, user, user.LastDownload);
 
-            var coordinates = _map.getCoordinatesByType(user.VisualActivities, ActivityType.Ride);            
+                if (latestActivities != null)
+                {
+                    foreach (var activity in latestActivities)
+                    {
+                        if (!context.Contains(activity))
+                        {
+                            context.Add(activity);
+                            user.VisualActivities.Add(activity);
+                        }
+                    }
+                    context.SaveChanges();
+                }
+            }
+            
+            var coordinates = _map.getCoordinates(user.VisualActivities);         
+            return PartialView("_BingMapPartial", coordinates);
+        }
+
+        public PartialViewResult LoadMapByType(ActivityType type)
+        {
+            _httpContextHelper.Context = HttpContext;
+            string accessToken = _httpContextHelper.getAccessToken();
+            int stravaId = Convert.ToInt32(User.FindFirst("stravaId").Value);
+            var user = getUpdatedUserActivities(accessToken, stravaId);
+            
+            var coordinates = _map.getCoordinatesByType(user.VisualActivities, type);
+
             return PartialView("_BingMapPartial", coordinates);
         }
    
+        private StravaUser getUpdatedUserActivities(string accessToken, int id)
+        {
+            var user = context.GetStravaUserById(id);
+
+            if (user == null || user.VisualActivities == null || user.VisualActivities.Count == 0)
+            {
+                var activities = _stravaClient.getAllUserActivities(accessToken, id);
+                user = new StravaUser()
+                {
+                    VisualActivities = activities.ToList(),
+                    UserId = id,
+                    LastDownload = DateTime.Now.Date
+                };
+                context.Add(user);
+                context.SaveChanges();
+            }
+            else
+            {
+                var lastDownloadDate = new DateTime(2019, 9, 29);
+                var latestActivities = _stravaClient.getUserActivitiesAfter(accessToken, user, user.LastDownload);
+
+                if (latestActivities != null)
+                {
+                    foreach (var activity in latestActivities)
+                    {
+                        if (!context.Contains(activity))
+                        {
+                            context.Add(activity);
+                            user.VisualActivities.Add(activity);
+                        }
+                    }
+                    context.SaveChanges();
+                }
+            }
+            return user; 
+        }
+
         private async Task<string> getAccessToken()
         {                                   
             return await HttpContext.GetTokenAsync("access_token");

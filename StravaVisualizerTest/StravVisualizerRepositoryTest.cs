@@ -12,10 +12,10 @@ using StravaVisualizerTest.Doubles;
 namespace StravaVisualizerTest
 {   
     [TestClass]
-    public class UserActivityRepositoryTest
+    public class StravVisualizerRepositoryTest
     {
         List<VisualActivity> visualActivities;
-        IQueryable<StravaUser> userActivities;
+        IQueryable<StravaUser> users;
         IStravaVisualizerDbContext userActivityDbContext;
         IStravaVisualizerRepository userActivityRepository;
 
@@ -24,7 +24,7 @@ namespace StravaVisualizerTest
         {
             visualActivities = (List<VisualActivity>) TestData.VisualActivitiesList();
 
-            userActivities = new List<StravaUser>
+            users = new List<StravaUser>
             {
                 new StravaUser {VisualActivities = visualActivities, UserId = 1, LastDownload = DateTime.Now},
                 new StravaUser {VisualActivities = visualActivities, UserId = 2, LastDownload = DateTime.Now},
@@ -36,16 +36,23 @@ namespace StravaVisualizerTest
             visualActivities[0].Summary.StartLatlng.Add(40.0F);
             visualActivities[1].Summary.StartLatlng.Add(30.6F);
             visualActivities[1].Summary.StartLatlng.Add(40.6F);
-
-
-
-            var mockSet = Substitute.For<DbSet<StravaUser>, IQueryable<StravaUser>>();
-            ((IQueryable<StravaUser>)mockSet).Provider.Returns(userActivities.Provider);
-            ((IQueryable<StravaUser>)mockSet).Expression.Returns(userActivities.Expression);
-            ((IQueryable<StravaUser>)mockSet).ElementType.Returns(userActivities.ElementType);
-            ((IQueryable<StravaUser>)mockSet).GetEnumerator().Returns(userActivities.GetEnumerator());            
+            
+            var userMockSet = Substitute.For<DbSet<StravaUser>, IQueryable<StravaUser>>();
+            ((IQueryable<StravaUser>)userMockSet).Provider.Returns(users.Provider);
+            ((IQueryable<StravaUser>)userMockSet).Expression.Returns(users.Expression);
+            ((IQueryable<StravaUser>)userMockSet).ElementType.Returns(users.ElementType);
+            ((IQueryable<StravaUser>)userMockSet).GetEnumerator().Returns(users.GetEnumerator());                          
             userActivityDbContext = Substitute.For<IStravaVisualizerDbContext>();
-            userActivityDbContext.StravaUsers.Returns(mockSet);
+            userActivityDbContext.StravaUsers.Returns(userMockSet);
+
+            var mockActivities = visualActivities.AsQueryable();
+            var activityMockSet = Substitute.For<DbSet<VisualActivity>, IQueryable<VisualActivity>>();
+            ((IQueryable<VisualActivity>)activityMockSet).Provider.Returns(mockActivities.Provider);
+            ((IQueryable<VisualActivity>)activityMockSet).Expression.Returns(mockActivities.Expression);
+            ((IQueryable<VisualActivity>)activityMockSet).ElementType.Returns(mockActivities.ElementType);
+            ((IQueryable<VisualActivity>)activityMockSet).GetEnumerator().Returns(mockActivities.GetEnumerator());
+            ((IQueryable<VisualActivity>)activityMockSet).Contains(visualActivities[0]).Returns(true);
+            userActivityDbContext.VisualActivities.Returns(activityMockSet);
 
             userActivityRepository = new StravaVisualizerRepository(userActivityDbContext);
         }

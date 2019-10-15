@@ -43,7 +43,7 @@ namespace StravaVisualizer.Models
 
             try
             {
-                var athleteStats = await _athletesApi.GetStatsAsync(id);
+                var athleteStats = await _athletesApi.GetStatsAsync(id);                
                 int totalActivites = calcTotalActivityCount(athleteStats);
                 return  await requestActivities(totalActivites);                             
             }
@@ -59,43 +59,62 @@ namespace StravaVisualizer.Models
             int total = athleteStats.AllRideTotals.Count.Value;
             total += athleteStats.AllRunTotals.Count.Value;
             total += athleteStats.AllSwimTotals.Count.Value;
+            
             return total;
         }
 
         public async Task<IEnumerable<SummaryActivity>> requestActivities( int total)
         {
             List<SummaryActivity> activities = new List<SummaryActivity>();
-            int requiredPages = (int) Math.Ceiling(total /30.0);
-                           
-            for(int i = 1; i <= requiredPages; i++)
+            int i = 1;
+            while (true)
             {
-                var activitesPage =  await _activitiesApi.GetLoggedInAthleteActivitiesAsync(page: i);                
+                var activitesPage = await _activitiesApi.GetLoggedInAthleteActivitiesAsync(page: i);
+                if(activitesPage.Count == 0 )
+                {
+                    break;
+                }
+
                 activities.AddRange(activitesPage);
+                i++;
             }
             return activities;
         }
        
         public IEnumerable<VisualActivity> getUserActivitiesAfter(string accessToken, StravaUser stravaUser, DateTime afterDate)
         {
+            List<VisualActivity> visualActivites = new List<VisualActivity>();
+
+            if(stravaUser.VisualActivities == null)
+            {
+                return visualActivites;
+            }
+
             var summaryActivities =  requestActivitiesAfterAsync(accessToken, stravaUser, afterDate).Result;
 
-            List<VisualActivity> visualActivites = new List<VisualActivity>();
+            if (summaryActivities == null)
+            {
+                return null;
+            }
+
             foreach (var summary in summaryActivities)
             {
                 visualActivites.Add(new VisualActivity(summary));
             }
+                        
             return visualActivites.AsEnumerable();
         }
     
         public async Task<IEnumerable<SummaryActivity>> requestActivitiesAfterAsync(string accessToken, StravaUser stravaUser, DateTime afterDate)
         {
             Configuration.Default.AccessToken = accessToken;
-            var athleteStats = await _athletesApi.GetStatsAsync(stravaUser.UserId);
-            int totalActivites = calcTotalActivityCount(athleteStats);
-            int requiredActivities = getActivityDifferenceSinceLastDownload(stravaUser, totalActivites);
+            
 
             try
             {
+                var athleteStats = await _athletesApi.GetStatsAsync(stravaUser.UserId);
+                int totalActivites = calcTotalActivityCount(athleteStats);
+                int requiredActivities = getActivityDifferenceSinceLastDownload(stravaUser, totalActivites);
                 return await requestActivitiesAfter(requiredActivities, afterDate);
             }
             catch (Exception e)
@@ -116,14 +135,23 @@ namespace StravaVisualizer.Models
             List<SummaryActivity> activities = new List<SummaryActivity>();
             DateTimeOffset dto = new DateTimeOffset(afterDate);
             var afterDateEpoch = (int)dto.ToUnixTimeSeconds();
-            
-            for (int i = 0; i <= requiredActivities; i= activities.Count())
+            int requiredPages = (int)Math.Ceiling(requiredActivities / 30.0);
+  
+            int i = 1;
+            while (true)
             {
                 var activitesPage = await _activitiesApi.GetLoggedInAthleteActivitiesAsync(page: i, after: afterDateEpoch);
+                if (activitesPage.Count == 0)
+                {
+                    break;
+                }
+
                 activities.AddRange(activitesPage);
+                i++;
             }
             return activities;
+
         }
-              
+
     }
 }

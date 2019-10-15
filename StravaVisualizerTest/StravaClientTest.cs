@@ -35,20 +35,33 @@ namespace StravaVisualizerTest
             athleteApi.GetStatsAsync(Arg.Any<int>()).Returns(stats);
 
             activitiesApi = Substitute.For<IActivitiesApi>();
+            
             List<SummaryActivity> activities = new List<SummaryActivity>
             {
                 TestData.SummaryActivity1(),
                 TestData.SummaryActivity2()
                 
-            };          
-            activitiesApi.GetLoggedInAthleteActivitiesAsync(page:Arg.Any<int>()).Returns(Task.FromResult(activities));
+            };
+
+            List<SummaryActivity> emptyActivities = new List<SummaryActivity>();           
+
+            activitiesApi.GetLoggedInAthleteActivitiesAsync(page: 1).Returns(Task.FromResult(activities));
+            activitiesApi.GetLoggedInAthleteActivitiesAsync(page: 2).Returns(Task.FromResult(emptyActivities));
 
             List<SummaryActivity> activitiesAfter = new List<SummaryActivity>
             {
                 TestData.SummaryActivity3(),
+                TestData.SummaryActivity3(),
+                TestData.SummaryActivity3(),
+                TestData.SummaryActivity3(),
+                TestData.SummaryActivity3(),
+                TestData.SummaryActivity3(),
+                TestData.SummaryActivity3(),
+                TestData.SummaryActivity3(),
                 TestData.SummaryActivity3()
             };
-            activitiesApi.GetLoggedInAthleteActivitiesAsync(page:Arg.Any<int>(), after: Arg.Any<int>()).Returns(Task.FromResult(activitiesAfter));
+            activitiesApi.GetLoggedInAthleteActivitiesAsync(page: 1, after: Arg.Any<int>()).Returns(Task.FromResult(activitiesAfter));
+            activitiesApi.GetLoggedInAthleteActivitiesAsync(page: 2, after: Arg.Any<int>()).Returns(Task.FromResult(emptyActivities));
         }
 
         [TestMethod]
@@ -105,6 +118,24 @@ namespace StravaVisualizerTest
             Assert.AreEqual(9, result.Count);
             Assert.AreEqual(100, result.ToArray()[0].Summary.MovingTime);
             Assert.AreEqual(ActivityType.Run, result.ToArray()[1].Summary.Type);
+        }
+
+        [TestMethod]
+        public void Test_RequesUserActivitiesAfter_ZeroRequiredPages()
+        {
+            StravaClient stravaClient = new StravaClient(activitiesApi, athleteApi);
+            DateTime dateTime = DateTime.Now;
+            var user = new StravaUser()
+            {
+                VisualActivities = null,
+                UserId = 123,
+                LastDownload = dateTime
+            };
+
+            //List<VisualActivity> result = (List<VisualActivity>) stravaClient.getUserActivitiesAfter("access_token", 123, dateTime);
+            List<VisualActivity> result = (List<VisualActivity>)stravaClient.getUserActivitiesAfter("access_token", user, dateTime);
+
+            Assert.AreEqual(0, result.Count);           
         }
 
         [TestMethod]
