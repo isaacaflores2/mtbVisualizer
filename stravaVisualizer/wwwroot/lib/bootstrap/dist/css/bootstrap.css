@@ -10067,13 +10067,21 @@ a.text-dark:hover, a.text-dark:focus {
     padding: 0 !important;
 }
 
+.p1{
+    padding: 1;
+}
+
+.p2-top {
+    padding-top: 5px;
+}
+
+
 .container-with-shadow {
-    box-shadow: 10 10 10 1px rgba(0,0,0,.15);
-    border: 1px solid #BFBFBF;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.15);    
     background-color: #fff;
     background-clip: padding-box;
-    border-radius: 10px;
-    padding: 20px;
+    border-radius: 2px;
+    padding: 0px;
     box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
     transition: box-shadow 83ms;
 }
