@@ -8,7 +8,18 @@
     var locations = []
     var pins = []
     function loadMapScenario() {
-        map = new Microsoft.Maps.Map(document.getElementById('myMap'), {});
+        var navigationBarMode = Microsoft.Maps.NavigationBarMode
+        map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
+            navigationBarMode: navigationBarMode.compact,
+            supportedMapTypes: [Microsoft.Maps.MapTypeId.road, Microsoft.Maps.MapTypeId.aerial, Microsoft.Maps.MapTypeId.grayscale, Microsoft.Maps.MapTypeId.canvasLight, Microsoft.Maps.MapTypeId.canvasDark],
+            customMapStyle: {
+                elements: mapElementStyle
+            },
+            settings: {
+                landColor: mapLandColor
+            }
+
+        });
 
         @foreach(Coordinate c in Model) {
             @: var location = new Microsoft.Maps.Location(@c.Latitude, @c.Longitude)
