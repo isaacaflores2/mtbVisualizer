@@ -9,19 +9,53 @@
 
 
 
-<div class="container-flex">
-    <div id="datepicker" class="fixed"></div>
-    <div id="mapContainer" class="flex-item container-with-shadow">
-        <div id="mapDiv" style="position:relative;width:100%;height:300px;"></div>
+<div>
+    <div class="container-flex margin-bottom">
+        <div id="datepicker" class="fixed-med margin-right container-with-shadow"></div>
+        <div id="mapContainer" class="flex-large container-with-shadow ">
+            <div id="mapDiv" style="position:relative; width:100%;height:100%;"></div>
+        </div>
+    </div>
+
+    <div id="weeklyTableDiv" class="container-flex container-flex-center container-flex-stretch container-with-shadow">
+        <table id="weeklyTable" style="width:100%>
+            <thead class="table-row.header" >
+                <th class="bg-light-grey ">Name</th>
+                <th class="bg-light-grey">Distance</th>
+                <th class="bg-light-grey">Time</th>
+                <th class="bg-light-grey">Type</th>
+                <th class="bg-light-grey">Date</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Lunch Run</td>
+                    <td>4 mi</td>
+                    <td>30:00</td>
+                    <td>Run</td>
+                    <td>Oct 15</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 
 @section Scripts{
+
+    <script src="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.csss"></script>
+
     <script>
         $(function () {
             $("#datepicker").datepicker();
         });
+
+        $(document).ready( function () {
+            $('#weeklyTable').DataTable({
+                paging: false,
+                searching: false,
+            });
+        });
     </script>
+    
     <script>
         $.ajax({
             url: '@Url.Action("LoadMap", "Map")',

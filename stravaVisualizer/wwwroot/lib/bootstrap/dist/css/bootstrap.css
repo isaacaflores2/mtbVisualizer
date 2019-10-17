@@ -26,6 +26,7 @@
   --danger: #dc3545;
   --light: #f8f9fa;
   --dark: #343a40;
+  --light-grey: #d9d9d9;
   --breakpoint-xs: 0;
   --breakpoint-sm: 576px;
   --breakpoint-md: 768px;
@@ -6587,11 +6588,6 @@ button.bg-light:focus {
   background-color: #343a40 !important;
 }
 
-.custom-bg-dark {
-    /*background-color: #4f4a4a;*/
-    background-color: #e6e6e6;
-}
-
 a.bg-dark:hover, a.bg-dark:focus,
 button.bg-dark:hover,
 button.bg-dark:focus {
@@ -10047,43 +10043,4 @@ a.text-dark:hover, a.text-dark:focus {
   }
 }
 
-
-.container-flex {
-    display: flex;
-}
-
-.fixed {
-    width: 400px;
-}
-
-.fixed {
-    width: 200px;  
-}
-
-.flex-item {
-    flex-grow: 1;
-}
-
-.p0 {
-    padding: 0 !important;
-}
-
-.p1{
-    padding: 1;
-}
-
-.p2-top {
-    padding-top: 5px;
-}
-
-
-.container-with-shadow {
-    box-shadow: 0 0 0 1px rgba(0,0,0,.15);    
-    background-color: #fff;
-    background-clip: padding-box;
-    border-radius: 2px;
-    padding: 0px;
-    box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
-    transition: box-shadow 83ms;
-}
 /*# sourceMappingURL=bootstrap.css.map */

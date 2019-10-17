@@ -54,3 +54,98 @@ body {
   height: 60px;
   line-height: 60px; /* Vertically center the text there */
 }
+
+
+.container-flex {
+    display: flex;
+}
+
+.container-flex-center {
+    justify-content: center;
+}
+
+.container-flex-stretch {
+    align-items: stretch;
+}
+.fixed-small {
+    width: 200px;
+}
+
+.fixed-med {
+    width: 400px;
+}
+
+.fixed-large {
+    width: 600px;
+}
+
+.flex-large {
+    flex: 1;
+    min-width: 600px;
+}
+
+.flex-item {
+    flex-grow: 1;
+}
+
+.p0 {
+    padding: 0 !important;
+}
+
+.p1 {
+    padding: 1;
+}
+
+.p2-top {
+    padding-top: 5px;
+}
+
+.margin-right{
+    margin-right: 30px;
+}
+
+.margin-bottom {
+    margin-bottom: 30px;
+}
+
+.margin-top {
+    margin-top: 50px;
+}
+
+.container-with-shadow {
+    box-shadow: 0 0 0 1px rgba(0,0,0,.15);
+    background-color: #fff;
+    background-clip: padding-box;
+    border-radius: 2px;
+    padding: 0px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
+    transition: box-shadow 83ms;
+}
+
+.bg-light-grey {
+    background-color: #d9d9d9;
+}
+
+.custom-bg-dark {
+    /*background-color: #4f4a4a;*/
+    background-color: #e6e6e6;
+}
+.table-row.header {
+    background-color: #d9d9d9;
+    font-weight: bold;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    width: 100%;
+}
+
+th, td {
+    white-space: nowrap;
+}
+
+div.dataTables_wrapper {
+    margin: 0 auto;
+}
+
+div.container {
+    width: 80%;
+}
