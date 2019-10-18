@@ -55,12 +55,24 @@ body {
   line-height: 60px; /* Vertically center the text there */
 }
 
+.wrapper {
+    display: inline-block;
+}
 
 .container-flex {
     display: flex;
 }
 
+.container-flex-grow {
+    flex-grow: 1;
+}
+
 .container-flex-center {
+    display: flex;
+    justify-content: center;
+}
+
+.container-center {    
     justify-content: center;
 }
 
@@ -130,8 +142,12 @@ body {
     /*background-color: #4f4a4a;*/
     background-color: #e6e6e6;
 }
-.table-row.header {
+
+.header {
     background-color: #d9d9d9;
+}
+
+.table-row.header {    
     font-weight: bold;
     padding-top: 8px;
     padding-bottom: 8px;
@@ -148,4 +164,7 @@ div.dataTables_wrapper {
 
 div.container {
     width: 80%;
+}
+.home-image{
+    width: 400px;
 }

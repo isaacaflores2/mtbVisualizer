@@ -28,4 +28,10 @@
     <Folder Include="Migrations\" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <None Include="wwwroot\Images\Home_DanLLShuttle.jpg" />
+    <None Include="wwwroot\Images\Home_GroundControl1.jpg" />
+  </ItemGroup>
+
 </Project>
