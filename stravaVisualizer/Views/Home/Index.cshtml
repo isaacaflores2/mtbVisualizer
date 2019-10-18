@@ -1,4 +1,6 @@
-﻿@{
+﻿@using StravaVisualizer.Models.MonthSummary
+@model MonthSummary
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -17,40 +19,93 @@
         </div>
     </div>
 
-    <div id="weeklyTableDiv" class="container-flex container-flex-center container-flex-stretch container-with-shadow">
-        <table id="weeklyTable" style="width:100%>
-            <thead class="table-row.header" >
-                <th class="bg-light-grey ">Name</th>
-                <th class="bg-light-grey">Distance</th>
-                <th class="bg-light-grey">Time</th>
-                <th class="bg-light-grey">Type</th>
-                <th class="bg-light-grey">Date</th>
+    <h3 class="text-center">Activites this week</h3>
+    <div id="weeklyTableDiv" class="container-flex-center container-with-shadow">
+        <table id="weeklyTable" style="width:100%">
+            <thead class="table-row.header">
+                <tr>
+                    <th class="bg-light-grey">Name</th>
+                    <th class="bg-light-grey">Distance</th>
+                    <th class="bg-light-grey">Time</th>
+                    <th class="bg-light-grey">Type</th>
+                    <th class="bg-light-grey">Date</th>
+                </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Lunch Run</td>
-                    <td>4 mi</td>
-                    <td>30:00</td>
-                    <td>Run</td>
-                    <td>Oct 15</td>
-                </tr>
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    @foreach (var activity in Model.Activites)
+                    {
+                        if ((activity.Summary.StartDate.Value.Date.Day >= Model.WeekStartDate.Day) && (activity.Summary.StartDate.Value.Date.Day <= Model.WeekStartDate.Day + 6))
+                        {
+                            <tr>
+                                <td>@activity.Summary.Name</td>
+                                <td>@activity.Summary.Distance m</td>
+                                <td>@activity.Summary.ElapsedTime</td>
+                                <td>@activity.Summary.Type</td>
+                                <td>@activity.Summary.StartDate.Value.Date.ToShortDateString()</td>
+                            </tr>
+                        }
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td>Lunch Run</td>
+                        <td>4 mi</td>
+                        <td>30:00</td>
+                        <td>Run</td>
+                        <td>Oct 15</td>
+                    </tr>
+                }
+
             </tbody>
         </table>
     </div>
 </div>
 
+
 @section Scripts{
-
-    <script src="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.csss"></script>
-
+    
     <script>
-        $(function () {
-            $("#datepicker").datepicker();
-        });
+        @if (User.Identity.IsAuthenticated)
+        {
+            @:var activeDates = {}
+            foreach (var activity in Model.Activites)
+            {
+                @: var csharpDate = "@activity.Summary.StartDate.Value.Date.ToString()"
+                @: var date = new Date(Date.parse(csharpDate))
+                @: activeDates[date] = date.toString()
+            }
 
+            @:var eventDates = {}
+            @:eventDates[new Date('10/10/2019')] = new Date('10/10/2019').toString()
+            @:$(function () {
+            @:    $("#datepicker").datepicker({
+            @:        beforeShowDay: function (date) {
+            @:              var highlight = activeDates[date]
+            @:              if (highlight) {
+            @:                    console.log("highlighting" + date)
+            @:                    return [true, "background-color: #007bff;", false]        
+            @:                }
+            @:                else {
+            @:                  return [true, '', '']
+            @:                }
+            @:            }
+            @:        });
+            @:});
+        }
+        else
+        {
+            @:$(function () {
+            @:    $("#datepicker").datepicker();
+            @:})
+        }
+     
         $(document).ready( function () {
             $('#weeklyTable').DataTable({
-                paging: false,
+                    paging: false,
                 searching: false,
             });
         });

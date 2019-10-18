@@ -224,3 +224,8 @@
 .ui-datepicker .ui-datepicker-next {
     background: transparent url(../img/datepickerArrow.png) bottom no-repeat;
 }
+
+.activity a {
+    background-color: #007bff;
+    color: #ffffff;
+}
