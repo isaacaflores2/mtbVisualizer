@@ -226,6 +226,6 @@
 }
 
 .activity a {
-    background-color: #007bff;
-    color: #ffffff;
+    background-color: #007bff !important;    
+    color: #ffffff !important;
 }
