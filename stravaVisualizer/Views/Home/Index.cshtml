@@ -41,8 +41,8 @@
                         {
                             <tr>
                                 <td>@activity.Summary.Name</td>
-                                <td>@activity.Summary.Distance m</td>
-                                <td>@activity.Summary.ElapsedTime</td>
+                                <td>@(Math.Round((float)activity.Summary.Distance/(float)1609.344)) miles</td>
+                                <td>@(TimeSpan.FromSeconds((double)activity.Summary.ElapsedTime))</td>
                                 <td>@activity.Summary.Type</td>
                                 <td>@activity.Summary.StartDate.Value.Date.ToShortDateString()</td>
                             </tr>
