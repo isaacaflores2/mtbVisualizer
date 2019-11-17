@@ -39,9 +39,15 @@ namespace mtbVisualizer
                                azureServiceTokenProvider.KeyVaultTokenCallback));
                        builder.AddAzureKeyVault(
                            keyVaultEndpoint, keyVaultClient, new DefaultKeyVaultSecretManager());
-                   }
+                   }                   
                }
             ).UseStartup<Startup>()
+            .ConfigureLogging(builder => 
+            {
+                builder.AddApplicationInsights();
+                builder.AddFilter<Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider>
+                                ("", LogLevel.Information);
+            })
              .Build();
 
         private static string GetKeyVaultEndpoint() => "https://mtbvisvault.vault.azure.net";
