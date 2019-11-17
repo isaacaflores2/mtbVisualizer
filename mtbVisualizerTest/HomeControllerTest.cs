@@ -12,7 +12,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MtbVisualizerTest
 {
@@ -23,6 +24,8 @@ namespace MtbVisualizerTest
         private IStravaClient stravaClient;
         private IStravaVisualizerRepository context;
         private IEnumerable<StravaUser> userActivities;
+        private ILogger<HomeController> logger;
+
 
         [TestInitialize]
         public void Setup()
@@ -51,12 +54,14 @@ namespace MtbVisualizerTest
             context.GetUserActivities().Returns(userActivities);
             context.GetStravaUserById(123).Returns(userActivity);
             context.GetStravaUserById(2222).Returns(new StravaUser());
+
+            logger = new NullLogger<HomeController>();
         }
 
         [TestMethod]
         public void Test_Index_Return_View()
         {
-            HomeController controller = new HomeController(httpContextHelper, stravaClient, context);
+            HomeController controller = new HomeController(httpContextHelper, stravaClient, context, logger);
             var claims = new Claim[] { new Claim("stravaId", "123") };
             var identity = new ClaimsIdentity(claims, "mock");
             var user = new ClaimsPrincipal(identity);
@@ -73,7 +78,7 @@ namespace MtbVisualizerTest
         [TestMethod]
         public void Test_Index_For_User_With_No_Data()
         {
-            HomeController controller = new HomeController(httpContextHelper, stravaClient, context);
+            HomeController controller = new HomeController(httpContextHelper, stravaClient, context, logger);
             var claims = new Claim[] { new Claim("stravaId", "222") };
             var identity = new ClaimsIdentity(claims, "mock");
             var user = new ClaimsPrincipal(identity);
@@ -91,7 +96,7 @@ namespace MtbVisualizerTest
         [TestMethod]
         public void Test_Calendar_Partial_View()
         {
-            HomeController controller = new HomeController(httpContextHelper, stravaClient, context);
+            HomeController controller = new HomeController(httpContextHelper, stravaClient, context, logger);
             var claims = new Claim[] { new Claim("stravaId", "123") };
             var identity = new ClaimsIdentity(claims, "mock");
             var user = new ClaimsPrincipal(identity);
@@ -111,7 +116,7 @@ namespace MtbVisualizerTest
         [TestMethod]
         public void Test_Table_Partial_View()
         {
-            HomeController controller = new HomeController(httpContextHelper, stravaClient, context);
+            HomeController controller = new HomeController(httpContextHelper, stravaClient, context, logger);
             var claims = new Claim[] { new Claim("stravaId", "123") };
             var identity = new ClaimsIdentity(claims, "mock");
             var user = new ClaimsPrincipal(identity);
@@ -131,7 +136,7 @@ namespace MtbVisualizerTest
         [TestMethod]
         public void Test_Privacy_Return_View()
         {
-            HomeController controller = new HomeController(httpContextHelper, stravaClient, context);
+            HomeController controller = new HomeController(httpContextHelper, stravaClient, context, logger);
 
             var result = controller.Privacy() as ViewResult;
 

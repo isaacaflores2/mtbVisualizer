@@ -8,6 +8,7 @@ using MtbVisualizer.Data;
 using MtbVisualizer.Models;
 using MtbVisualizer.Models.Activities;
 using MtbVisualizer.Models.MonthSummary;
+using Microsoft.Extensions.Logging;
 
 namespace MtbVisualizer.Controllers
 {
@@ -16,12 +17,14 @@ namespace MtbVisualizer.Controllers
         private readonly IStravaVisualizerRepository _context;
         private readonly IStravaClient _stravaClient;
         private readonly IHttpContextHelper _httpContextHelper;
+        private readonly ILogger _logger; 
 
-        public HomeController(IHttpContextHelper httpContextHelper, IStravaClient stravaClient, IStravaVisualizerRepository context)
+        public HomeController(IHttpContextHelper httpContextHelper, IStravaClient stravaClient, IStravaVisualizerRepository context, ILogger<HomeController> logger)
         {
-            this._httpContextHelper = httpContextHelper;
-            this._stravaClient = stravaClient;
-            this._context = context;
+            _httpContextHelper = httpContextHelper;
+            _stravaClient = stravaClient;
+            _context = context;
+            _logger = logger; 
         }
 
         public IActionResult Index()
@@ -84,7 +87,8 @@ namespace MtbVisualizer.Controllers
 
             if (user == null || user.VisualActivities == null || user.VisualActivities.Count == 0)
             {
-                var activities = _stravaClient.getAllUserActivities(accessToken, id);
+                logUserActivity(id, "New user. Requeusting all activities from strava. ");
+                var activities = _stravaClient.getAllUserActivities(accessToken, id);                
                 user = new StravaUser()
                 {
                     VisualActivities = activities.ToList(),
@@ -97,6 +101,7 @@ namespace MtbVisualizer.Controllers
             else
             {                
                 var latestActivities = _stravaClient.getUserActivitiesAfter(accessToken, user, user.LastDownload);
+                logUserActivity(id, "Requeusting latest activities from strava. ");
 
                 if (latestActivities != null)
                 {
@@ -112,6 +117,11 @@ namespace MtbVisualizer.Controllers
                 }
             }
             return user;
+        }
+
+        private void logUserActivity(int stravaId, string msg)
+        {
+            _logger.LogInformation($"{stravaId} : {msg}");
         }
     }
 }
