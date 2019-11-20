@@ -13,6 +13,8 @@ using System;
 using System.Linq;
 using MtbVisualizerTest.Doubles;
 using MtbVisualizer.Data;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MtbVisualizerTest
 {
@@ -24,6 +26,7 @@ namespace MtbVisualizerTest
         private IMap map;
         private IEnumerable<StravaUser> userActivities;
         private IStravaVisualizerRepository userActivityRepository;
+        private ILogger<MapController> logger;
 
         [TestInitialize]
         public void Setup()
@@ -52,13 +55,14 @@ namespace MtbVisualizerTest
             userActivityRepository.GetUserActivities().Returns(userActivities);            
             userActivityRepository.GetStravaUserById(123).Returns(userActivity);
             userActivityRepository.GetStravaUserById(2222).Returns(new StravaUser());
-            
+
+            logger = new NullLogger<MapController>();
         }
 
         [TestMethod]
         public void Test_Index_Return_View()
         {          
-            MapController controller = new MapController(httpContextHelper, stravaClient, map, userActivityRepository);
+            MapController controller = new MapController(httpContextHelper, stravaClient, map, userActivityRepository, logger);
 
             var result = controller.Index() as ViewResult;
 
@@ -68,7 +72,7 @@ namespace MtbVisualizerTest
         [TestMethod]
         public void Test_LoadMap_Return_View()
         {           
-            MapController controller = new MapController(httpContextHelper, stravaClient, map, userActivityRepository);
+            MapController controller = new MapController(httpContextHelper, stravaClient, map, userActivityRepository, logger);
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
                 new Claim("stravaId", "123")               
@@ -86,7 +90,7 @@ namespace MtbVisualizerTest
         [TestMethod]
         public void Test_LoadMapPartial_Context_Data_For_Returning_User()
         {
-            MapController controller = new MapController(httpContextHelper, stravaClient, map, userActivityRepository);
+            MapController controller = new MapController(httpContextHelper, stravaClient, map, userActivityRepository, logger);
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
                 new Claim("stravaId", "123")
@@ -106,7 +110,7 @@ namespace MtbVisualizerTest
         [TestMethod]
         public void Test_LoadMapPartial_Context_Data_For_New_User()
         {
-            MapController controller = new MapController(httpContextHelper, stravaClient, map, userActivityRepository);
+            MapController controller = new MapController(httpContextHelper, stravaClient, map, userActivityRepository, logger);
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
                 new Claim("stravaId", "2222")
@@ -126,7 +130,7 @@ namespace MtbVisualizerTest
         [TestMethod]
         public void Test_LoadMapByTypePartial()
         {
-            MapController controller = new MapController(httpContextHelper, stravaClient, map, userActivityRepository);
+            MapController controller = new MapController(httpContextHelper, stravaClient, map, userActivityRepository, logger);
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
                 new Claim("stravaId", "123")

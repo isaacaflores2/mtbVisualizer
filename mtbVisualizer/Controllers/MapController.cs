@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MtbVisualizer.Data;
 using MtbVisualizer.Models;
 using MtbVisualizer.Models.Activities;
@@ -20,15 +21,17 @@ namespace MtbVisualizer.Controllers
         private readonly IStravaClient _stravaClient;
         private readonly IMap _map;
         private readonly IStravaVisualizerRepository _context;
-         
+        private readonly ILogger _logger;
+
         public IDictionary<string, string> AuthProperties { get; set; }
 
-        public MapController(IHttpContextHelper httpContextHelper, IStravaClient stravaClient, IMap map, IStravaVisualizerRepository userActivityRepository) 
+        public MapController(IHttpContextHelper httpContextHelper, IStravaClient stravaClient, IMap map, IStravaVisualizerRepository userActivityRepository, ILogger<MapController> logger) 
         {
             this._httpContextHelper = httpContextHelper;
             this._stravaClient = stravaClient;
             this._map = map;
             this._context = userActivityRepository;
+            this._logger = logger; 
         }
 
         public IActionResult Index()
