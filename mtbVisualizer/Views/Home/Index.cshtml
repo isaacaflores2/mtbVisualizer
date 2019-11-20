@@ -72,7 +72,7 @@
             })
         })
 
-        var today = new Date()
+        var today = new Date()               
         $(document).ready(function () {
             $("#calendarDiv").load('@Url.Action("LoadCalendarPartial")', { date: today.toISOString() }, function () {
                 $("#tableDiv").load('@Url.Action("LoadTablePartial")', { date: today.toISOString() })
