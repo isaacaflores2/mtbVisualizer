@@ -35,11 +35,8 @@ namespace MtbVisualizerTest
             
 
             stravaClient = Substitute.For<IStravaClient>();
-            IEnumerable<VisualActivity> activities = TestData.MonthVisualActivitiesList();
-            //IEnumerable<VisualActivity> newUserActivities = TestData.NewVisualActivitiesList();
-            stravaClient.getAllUserActivities("access_token", 123).Returns(activities);
-            //stravaClient.getAllUserActivities("access_token", 2222).Returns(newUserActivities);
-            //stravaClient.getUserActivitiesAfter("access_token", Arg.Any<StravaUser>(), Arg.Any<DateTime>()).Returns(newUserActivities);
+            IEnumerable<VisualActivity> activities = TestData.MonthVisualActivitiesList();            
+            stravaClient.getAllUserActivities("access_token", 123).Returns(activities);            
 
             var userActivity = new StravaUser { VisualActivities = (List<VisualActivity>)activities, UserId = 123, LastDownload = DateTime.Now };
             userActivities = new List<StravaUser>
