@@ -1,5 +1,5 @@
 [![Build Status](https://dev.azure.com/isaacaflores2/mtbVisualizer/_apis/build/status/isaacaflores2.mtbVisualizer?branchName=master)](https://dev.azure.com/isaacaflores2/mtbVisualizer/_build/latest?definitionId=2&branchName=master)
-# mtbVisualizer
+# [mtbVisualizer](https://mtbvisualizer.azurewebsites.net/)
 ## Visualize your Strava data
 ASP.NET Core Web Application that utilizes the Strava API to allow you to view your workouts and activities on a calendar, table, and a map. 
 I was inspired to create this website because I wanted to be able to visualize all the cool places I have mountain biked in Washington. The site has the following features:
